@@ -1,30 +1,32 @@
-const Parent = require("../models/parent.model.js");
+const Parent = require('../models/parent.model.js');
+
 
 exports.register = (req, res) => {
   if (!req.body) {
-    res.status(400).send({
-      message: "Content can not be empty!"
-    });
+    res.status(400).send({ message: "Content can not be empty!" });
+    return;
   }
-  
-  const parent = new Parent({
-    phone: req.body.phone,
-    password: req.body.password
-  });
 
-  Parent.register(parent, (err, data) => {
-    if (err)
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while registering the Parent."
-      });
-    else res.send(data);
-  });
+  const parent = new Parent(
+    {
+      name: req.body.name,
+      sex: req.body.sex,
+      child: req.body.child,
+      phone: req.body.phone,
+      password: req.body.password
+    }
+  );
 
-};
-
-
-
+  Parent.register(parent,
+    (err, data) => {
+      if (err) {
+        res.status(500).send({
+          message: err.message || "Some error occurred while registering the Parent."
+        })
+      }
+      else res.send(data);//这里data是回调给前端的response
+    })
+}
 
 
 

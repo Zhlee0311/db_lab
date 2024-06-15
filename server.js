@@ -17,13 +17,17 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
-// simple route for testing
+// simple route for testing,runs "hello,js" on the root URL
 app.get('/', (req, res) => {
   res.send("hello,js");
 })
 
 // routes
 require('./app/routes/parent.routes.js')(app);
+require('./app/routes/teacher.routes.js')(app);
+require('./app/routes/class.routes.js')(app);
+require('./app/routes/student.routes.js')(app);
+
 
 
 const PORT = process.env.PORT || 8080;
