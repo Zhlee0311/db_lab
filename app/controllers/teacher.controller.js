@@ -35,7 +35,6 @@ exports.register = (req, res) => {
   )
 };
 
-
 exports.login = (req, res) => {
   if (!req.body) {
     res.status(400).send({
@@ -65,7 +64,7 @@ exports.login = (req, res) => {
       const token = tokenEncode(data);
       // 设置 cookie，有效期为 30 天，httpOnly 和 secure
       res.cookie('token', token, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true });
-      res.json({ message: 'Login successful' });
+      res.json({ message: 'login success' });
     }
   }
   )

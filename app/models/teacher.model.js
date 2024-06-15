@@ -19,6 +19,7 @@ class Teacher {
     try {
       let schoolId = null;
       let classId = null;
+      let teacherId = null;
       const res1 = await queryAsync("SELECT id FROM school WHERE name=?", newTeacher.school);
       if (!res1.length) {
         const errorMessage = `[The school does not exist, please check your input] ${newTeacher.school}`;
@@ -39,24 +40,27 @@ class Teacher {
         const newError = new Error(errorMessage);
         throw (newError);
       }
-      const res4 = await queryAsync("SHOW TABLE STATUS LIKE 'teacher'");
-      const id = res4[0].Auto_increment;
 
       if (newTeacher.ismaster == 1) {
-        const res5 = await queryAsync("SELECT master FROM class WHERE id =?", classId);
-        if (res5.length) {
-          const errorMessage = `[The class has been assigned a master, please check your input] ${newTeacher.class}`;
+        const res4 = await queryAsync("SELECT master FROM class WHERE id=?", classId);
+        if (res4.length) {
+          const errorMessage = `[The class has been assigned a master,pelase check your input] ${newTeacher.class}`;
           const newError = new Error(errorMessage);
           throw (newError);
         }
-        const res6 = await queryAsync("UPDATE class SET master =? WHERE id =?", [id, classId]);
+        const res5 = await queryAsync("UPDATE class SET master=? WHERE id=?", [newTeacher.phone, classId]);
       }
 
-      const res7 = await queryAsync("INSERT INTO teacher(prefix_id,name,sex,class,subject,phone,password) VALUES(?,?,?,?,?,?,?)",
-        ["teacher" + id, newTeacher.name, newTeacher.sex, classId, newTeacher.subject, newTeacher.phone, newTeacher.password]);
+      const res6 = await queryAsync("INSERT INTO teacher(name,sex,class,subject,phone,password) VALUES(?,?,?,?,?,?)",
+        [newTeacher.name, newTeacher.sex, classId, newTeacher.subject, newTeacher.phone, newTeacher.password]);
 
-      console.log("teacher registered:", { id: id, ...newTeacher });
-      result(null, { id: id, ...newTeacher });
+      teacherId = res6.insertId;
+
+      const res7 = await queryAsync("UPDATE teacher SET prefix_id=? WHERE id=?",
+        ["teacher" + teacherId, teacherId]);
+
+      console.log("teacher registered:", { id: teacherId, ...newTeacher });
+      result(null, { id: teacherId, ...newTeacher });
     }
     catch (err) {
       console.log(err);

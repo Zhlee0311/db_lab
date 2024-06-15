@@ -1,4 +1,8 @@
 const sql = require('./db.js');
+const { promisify } = require('util');
+
+const queryAsync = promisify(sql.query).bind(sql);
+
 
 class Student {
   constructor(student) {
@@ -7,55 +11,31 @@ class Student {
     this.master = student.master;//班主任的id
   }
 
-  static addStudent(newStudent, result) {
-    sql.query("SELECT id FROM class WHERE master =?", newStudent.master,
-      (err1, res1) => {
-        if (err1) {
-          const errorMessage = `[Failed to select class of the master:]${err1.message}`;
-          const newError = new Error(errorMessage);
-          console.error(newError);
-          result(newError, null);
-          return;
-        }
-        if (res1.length) {
-          const classId = res1[0].id;
-          sql.query("INSERT INTO student(name,sex,class) VALUES(?,?,?)",
-            [newStudent.name, newStudent.sex, classId],
-            (err2, res2) => {
-              if (err2) {
-                const errorMessage = `[Failed to insert student:]${err2.message}`;
-                const newError = new Error(errorMessage);
-                console.error(newError);
-                result(newError, null);
-                return;
-              }
-              const studentId = res2.insertId;
-              const prefixId = "student" + studentId;
-              sql.query("UPDATE student SET prefix_id =? WHERE id =?", [prefixId, studentId],
-                (err3, res3) => {
-                  if (err3) {
-                    const errorMessage = `[Failed to update student prefix_id:]${err3.message}`;
-                    const newError = new Error(errorMessage);
-                    console.error(newError);
-                    result(newError, null);
-                    return;
-                  }
-                }
-              )
-              console.log("student added:", { id: res2.insertId, ...newStudent });
-              result(null, { id: res2.insertId, ...newStudent });
-              return;
-            }
-          )
-        }
-        else {
-          result({ message: "class_not_found" }, null);
-          return;
-        }
-      }
-    )
-  }
+  static async addStudent(newStudent, result) {
+    try {
+      const res1 = await queryAsync("SELECT id FROM class WHERE master =?", newStudent.master);
+      const classId = res1[0].id;
 
+      const res2 = await queryAsync("INSERT INTO student(name,sex,class) VALUES (?,?,?)",
+        [newStudent.name, newStudent.sex, classId]
+      );
+      const studentId = res2.insertId;
+
+      const res3 = await queryAsync("UPDATE student SET prefix_id=? WHERE id=?",
+        ["student" + studentId, studentId]
+      );
+
+      const res4 = await queryAsync("SELECT COUNT(*) as number FROM student WHERE class =?", classId);
+      const number = res4[0].number;//班级人数
+
+      console.log("student added:", { id: studentId, name: newStudent.name, sex: newStudent.sex, class: classId, number: number })
+      result(null, { id: studentId, name: newStudent.name, sex: newStudent.sex, class: classId, number: number });
+    }
+    catch (err) {
+      console.log(err);
+      result(err, null);
+    }
+  }
 
 }
 
