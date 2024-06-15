@@ -1,8 +1,28 @@
 const express = require('express');
-
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const tokenDecode = require('./app/public/decode.js').tokenDecode;
 
 const app = express();
+
+function verifyToken(req, res, next) {
+  if (req.path === '/api/parents/login' || req.path === '/api/teachers/login' || req.path === '/api/admins/login') {
+    return next();
+  }
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+  const decoded = tokenDecode(token);
+  if (!decoded) {
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+  else {
+    req.user = decoded;
+    next();
+  }
+}
+
 
 app.use(cors({
   origin: (
@@ -10,12 +30,14 @@ app.use(cors({
     callback,
   ) => {
     callback(null, requestOrigin)
-  }
+  },
+  credentials: true
 }));
 
 app.use(express.json());
-
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+app.use(verifyToken);
 
 // simple route for testing,runs "hello,js" on the root URL
 app.get('/', (req, res) => {

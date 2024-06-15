@@ -51,7 +51,7 @@ exports.login = (req, res) => {
     }
     else {
       const token = tokenEncode(data);
-      res.cookie('token', token, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true });
+      res.cookie('token', token, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, secure: false, domain: 'localhost:5173', sameSite: 'none' });
       res.json({ message: 'login success' });
     }
   })

@@ -3,6 +3,10 @@ const { promisify } = require('util');
 
 const queryAsync = promisify(sql.query).bind(sql);
 
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+
+}
 
 class Teacher {
   constructor(teacher) {
@@ -41,16 +45,6 @@ class Teacher {
         throw (newError);
       }
 
-      if (newTeacher.ismaster == 1) {
-        const res4 = await queryAsync("SELECT master FROM class WHERE id=?", classId);
-        if (res4.length) {
-          const errorMessage = `[The class has been assigned a master,pelase check your input] ${newTeacher.class}`;
-          const newError = new Error(errorMessage);
-          throw (newError);
-        }
-        const res5 = await queryAsync("UPDATE class SET master=? WHERE id=?", [newTeacher.phone, classId]);
-      }
-
       const res6 = await queryAsync("INSERT INTO teacher(name,sex,class,subject,phone,password) VALUES(?,?,?,?,?,?)",
         [newTeacher.name, newTeacher.sex, classId, newTeacher.subject, newTeacher.phone, newTeacher.password]);
 
@@ -58,6 +52,20 @@ class Teacher {
 
       const res7 = await queryAsync("UPDATE teacher SET prefix_id=? WHERE id=?",
         ["teacher" + teacherId, teacherId]);
+
+
+      if (newTeacher.ismaster == 1) {
+        const res4 = await queryAsync("SELECT master FROM class WHERE id=?", classId);
+        if (res4[0].master != null) {
+          const errorMessage = `[The class has been assigned a master,pelase check your input] ${newTeacher.class}`;
+          const newError = new Error(errorMessage);
+          throw (newError);
+        }
+
+        await delay(1000);
+        
+        const res5 = await queryAsync("UPDATE class SET master=? WHERE id=?", [newTeacher.phone, classId]);
+      }
 
       console.log("teacher registered:", { id: teacherId, ...newTeacher });
       result(null, { id: teacherId, ...newTeacher });
