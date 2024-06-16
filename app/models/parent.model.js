@@ -69,8 +69,6 @@ class Parent {
         throw (newError);
       }
 
-      let parentId = res1[0].id;
-
       console.log("parent logged in:", { ...res1[0] });
       result(null, { ...res1[0] });
     }

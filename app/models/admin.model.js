@@ -28,7 +28,7 @@ class Admin {
       const schoolId = res2[0].id;
 
       console.log("admin logged in: ", { ...res1[0], school: schoolId });
-      result(null, { ...res1[0] });
+      result(null, { ...res1[0], school: schoolId });
     }
     catch (err) {
       console.log(err);
