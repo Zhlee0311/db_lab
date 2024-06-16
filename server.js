@@ -6,7 +6,8 @@ const tokenDecode = require('./app/public/decode.js').tokenDecode;
 const app = express();
 
 function verifyToken(req, res, next) {
-  if (req.path === '/api/parents/login' || req.path === '/api/teachers/login' || req.path === '/api/admins/login') {
+  if (req.path == '/api/parents/login' || req.path == '/api/teachers/login' || req.path == '/api/admins/login'
+    || req.path == '/api/parents/register' || req.path == 'api/teachers/register') {
     return next();
   }
   const token = req.cookies.token;
@@ -22,7 +23,6 @@ function verifyToken(req, res, next) {
     next();
   }
 }
-
 
 app.use(cors({
   origin: (
@@ -49,7 +49,7 @@ require('./app/routes/parent.routes.js')(app);
 require('./app/routes/teacher.routes.js')(app);
 require('./app/routes/class.routes.js')(app);
 require('./app/routes/student.routes.js')(app);
-
+require('./app/routes/admin.routes.js')(app);
 
 
 const PORT = process.env.PORT || 8080;

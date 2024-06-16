@@ -63,8 +63,14 @@ exports.login = (req, res) => {
     else {
       const token = tokenEncode(data);
       // 设置 cookie，有效期为 30 天，httpOnly 和 secure
-      res.cookie('token', token, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, secure: false, domain: 'localhost:5173', sameSite: 'none' });
-      res.json({ message: 'login success' });
+      res.cookie('token', token,
+        {
+          maxAge: 30 * 24 * 60 * 60 * 1000,
+          httpOnly: true,
+          secure: true,
+          sameSite: 'None'
+        });
+      res.json({ message: 'login success', ...data });
     }
   }
   )

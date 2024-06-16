@@ -7,10 +7,10 @@ exports.addClass = (req, res) => {
     });
     return;
   }
-  
+
   const newClass = new Class(
     {
-      school: req.body.school,
+      school: req.user.id,
       name: req.body.name,
       profile: req.body.profile
     }

@@ -1,6 +1,5 @@
 const Student = require("../models/student.model.js");
 
-
 exports.addStudent = (req, res) => {
   if (!req.body) {
     res.status(400).send({
@@ -12,7 +11,7 @@ exports.addStudent = (req, res) => {
   const student = new Student({
     name: req.body.name,
     sex: req.body.sex,
-    master: req.body.master
+    master: req.user.id
   });
 
   Student.addStudent(student,

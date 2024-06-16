@@ -11,7 +11,7 @@ exports.tokenDecode = (token) => {
   const providedHash = parts[1];
 
   const hash = crypto.createHmac('sha256', secret).update(originData).digest('hex');
-  if (hash !== providedHash) {
+  if (hash != providedHash) {
     return null;
   } else {
     return base64Decode(originData);

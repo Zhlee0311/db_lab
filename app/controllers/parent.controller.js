@@ -3,7 +3,6 @@ const Parent = require('../models/parent.model.js');
 const tokenEncode = require('../public/encode.js').tokenEncode;
 
 
-
 exports.register = (req, res) => {
   if (!req.body) {
     res.status(400).send({ message: "Content can not be empty!" });
@@ -51,8 +50,14 @@ exports.login = (req, res) => {
     }
     else {
       const token = tokenEncode(data);
-      res.cookie('token', token, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, secure: false, domain: 'localhost:5173', sameSite: 'none' });
-      res.json({ message: 'login success' });
+      res.cookie('token', token,
+        {
+          maxAge: 30 * 24 * 60 * 60 * 1000,
+          httpOnly: true,
+          secure: true,
+          sameSite: 'None'
+        });
+      res.json({ message: 'login success', ...data });
     }
   })
 };

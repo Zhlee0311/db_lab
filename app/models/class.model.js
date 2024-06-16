@@ -1,4 +1,8 @@
 const sql = require('./db.js');
+const { promisify } = require('util');
+
+const queryAsync = promisify(sql.query).bind(sql);
+
 
 class Class {
   constructor(anotherClass) {
@@ -7,35 +11,33 @@ class Class {
     this.profile = anotherClass.profile;
   }
 
-  static addClass(newClass, result) {
-    sql.query("INSERT INTO class (school,name,profile) VALUES (?,?,?)",
-      [newClass.school, newClass.name, newClass.profile],
-      (err1, res1) => {
-        if (err1) {
-          const errorMessage = `[Failed to insert class:]${err1.message}`;
-          const newError = new Error(errorMessage);
-          console.error(newError);
-          result(newError, null);
-          return;
-        }
+  static async addClass(newClass, result) {
+    try {
+      const res1 = await queryAsync("SELECT * FROM class WHERE school =? AND name =?",
+        [newClass.school, newClass.name]);
+      if (res1.length) {
+        const errorMessage = `[This school already has a class with the name]${newClass.name}`;
+        const newError = new Error(errorMessage);
+        throw (newError);
+      }
+      const res2 = await queryAsync("INSERT INTO class(school,name,profile) VALUES(?,?,?)",
+        [newClass.school, newClass.name, newClass.profile]);
+      const classId = res2.insertId;
 
-        const classId = res1.insertId;
-        const prefixId = "class" + classId;
+      const res3 = await queryAsync("UPDATE class SET prefix_id =? WHERE id=?",
+        ["class" + classId, classId]);
 
-        sql.query("UPDATE class SET prefix_id =? WHERE id =?", [prefixId, classId], (err2, res2) => {
-          if (err2) {
-            const errorMessage = `[Failed to update class prefix_id:]${err2.message}`;
-            const newError = new Error(errorMessage);
-            console.error(newError);
-            result(newError, null);
-            return;
-          }
-          console.log("class added:", { id: res1.insertId, ...newClass });
-          result(null, { id: res1.insertId, ...newClass });
-          return;
-        }
-        )
-      })
+      const res4 = await queryAsync("SELECT COUNT(*) as number FROM class WHERE school =?",
+        [newClass.school]);
+      const number = res4[0].number;
+
+      console.log("class added:", { id: classId, ...newClass, number: number });
+      result(null, { id: classId, ...newClass, number: number });
+    }
+    catch (err) {
+      console.log(err);
+      result(err, null);
+    }
   }
 
 }
