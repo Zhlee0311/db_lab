@@ -71,8 +71,8 @@ class Parent {
 
       let parentId = res1[0].id;
 
-      console.log("parent logged in:", { id: parentId, ...this });
-      result(null, { id: parentId, ...this });
+      console.log("parent logged in:", { ...res1[0] });
+      result(null, { ...res1[0] });
     }
     catch (err) {
       console.log(err);

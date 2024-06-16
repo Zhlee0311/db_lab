@@ -10,7 +10,7 @@ exports.addClass = (req, res) => {
 
   const newClass = new Class(
     {
-      school: req.user.id,
+      school: req.user.school,
       name: req.body.name,
       profile: req.body.profile
     }

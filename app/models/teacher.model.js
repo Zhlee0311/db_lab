@@ -3,10 +3,7 @@ const { promisify } = require('util');
 
 const queryAsync = promisify(sql.query).bind(sql);
 
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 
-}
 
 class Teacher {
   constructor(teacher) {
@@ -45,32 +42,37 @@ class Teacher {
         throw (newError);
       }
 
-      const res6 = await queryAsync("INSERT INTO teacher(name,sex,class,subject,phone,password) VALUES(?,?,?,?,?,?)",
-        [newTeacher.name, newTeacher.sex, classId, newTeacher.subject, newTeacher.phone, newTeacher.password]);
+      await queryAsync("START TRANSACTION");
 
-      teacherId = res6.insertId;
+      const res4 = await queryAsync(
+        "INSERT INTO teacher(name,sex,class,subject,phone,password) VALUES(?,?,?,?,?,?)",
+        [newTeacher.name, newTeacher.sex, classId, newTeacher.subject, newTeacher.phone, newTeacher.password]
+      );
 
-      const res7 = await queryAsync("UPDATE teacher SET prefix_id=? WHERE id=?",
-        ["teacher" + teacherId, teacherId]);
+      teacherId = res4.insertId;
 
+      await queryAsync(
+        "UPDATE teacher SET prefix_id =? WHERE id =?",
+        ["teacher" + teacherId, teacherId]
+      );
 
       if (newTeacher.ismaster == 1) {
-        const res4 = await queryAsync("SELECT master FROM class WHERE id=?", classId);
-        if (res4[0].master != null) {
-          const errorMessage = `[The class has been assigned a master,pelase check your input] ${newTeacher.class}`;
+        const res5 = await queryAsync("SELECT master FROM class WHERE id =?", classId);
+        if (res5[0].master != null) {
+          const errorMessage = `[The class has been assigned a master, please check your input]${newTeacher.class}`;
           const newError = new Error(errorMessage);
           throw (newError);
         }
-
-        await delay(1000);
-        
-        const res5 = await queryAsync("UPDATE class SET master=? WHERE id=?", [newTeacher.phone, classId]);
+        await queryAsync("UPDATE class SET master =? WHERE id =?", [teacherId, classId]);
       }
+
+      await queryAsync("COMMIT");
 
       console.log("teacher registered:", { id: teacherId, ...newTeacher });
       result(null, { id: teacherId, ...newTeacher });
     }
     catch (err) {
+      await queryAsync("ROLLBACK");
       console.log(err);
       result(err, null);
     }
@@ -98,8 +100,8 @@ class Teacher {
       if (res2[0].master == teacherId) {
         ismaster = 1;
       }
-      console.log("teacher logged in:", { id: teacherId, ...res1[0], ismaster: ismaster });
-      result(null, { id: teacherId, ...res1[0], ismaster: ismaster })
+      console.log("teacher logged in:", { ...res1[0], ismaster: ismaster });
+      result(null, { ...res1[0], ismaster: ismaster })
     }
     catch (err) {
       console.log(err);

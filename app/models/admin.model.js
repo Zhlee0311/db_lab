@@ -23,8 +23,12 @@ class Admin {
         throw (newError);
       }
       const adminId = res1[0].id;
-      console.log("admin logged in: ", { id: adminId, ...this });
-      result(null, { id: adminId, ...this });
+
+      const res2 = await queryAsync("SELECT * FROM school WHERE admin=?", adminId);
+      const schoolId = res2[0].id;
+
+      console.log("admin logged in: ", { ...res1[0], school: schoolId });
+      result(null, { ...res1[0] });
     }
     catch (err) {
       console.log(err);
