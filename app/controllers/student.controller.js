@@ -24,6 +24,30 @@ exports.addStudent = (req, res) => {
       else res.send(data);
     }
   );
+}
 
+
+
+exports.showStudent = (req, res) => {
+  if (!req.user.class) {
+    res.status(400).send({
+      message: "You are not a teacher!"
+    });
+    return;
+  }
+  let classId = req.user.class;
+
+  Student.showStudent(classId, (err, data) => {
+    if (err) {
+      req.status(500).send({
+        message:
+          err.message || "Some error occurred while showing the Student."
+      });
+    }
+    else {
+      res.send(data);
+    }
+  }
+  )
 }
 

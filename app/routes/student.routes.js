@@ -1,10 +1,12 @@
-module.exports=app=>{
-  const students=require('../controllers/student.controller.js');
+module.exports = app => {
+  const students = require('../controllers/student.controller.js');
 
-  var router=require("express").Router();
+  var router = require("express").Router();
 
-  router.post('/addStudent',students.addStudent);
+  router.post('/addStudent', students.addStudent);
 
-  app.use('/api/students',router);
+  router.post('/showStudent', students.showStudent);
+
+  app.use('/api/students', router);
 
 }

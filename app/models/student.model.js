@@ -37,6 +37,24 @@ class Student {
     }
   }
 
+  static async showStudent(classId, result) {
+    try {
+      const res1 = await queryAsync("SELECT * FROM student WHERE class=? order by sex", classId);
+      const res2 = await queryAsync("SELECT COUNT(*) as boys FROM student WHERE class =? AND sex='男'", classId);
+      const res3 = await queryAsync("SELECT COUNT(*) as girls FROM student WHERE class =? AND sex='女'", classId);
+
+      const boys = res2[0].boys;
+      const girls = res3[0].girls;
+
+      console.log("students in class:", res1);
+      result(null, { students: res1, boys: boys, girls: girls })
+
+    }
+    catch (err) {
+      console.log(err);
+      result(err, null);
+    }
+  }
 }
 
 module.exports = Student;
