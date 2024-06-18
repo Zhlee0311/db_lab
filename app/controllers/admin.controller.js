@@ -12,7 +12,7 @@ exports.login = (req, res) => {
 
   const admin = new Admin(
     {
-      account: req.body.account,
+      account: req.body.phone,//为适应前端作修改
       password: req.body.password
     }
   )

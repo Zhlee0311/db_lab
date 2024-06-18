@@ -2,7 +2,7 @@ const Class = require('../models/class.model.js');
 
 exports.addClass = (req, res) => {
   if (!req.body) {
-    res.status(400).send({
+    res.status(400).json({
       message: "Content can not be empty!"
     });
     return;
@@ -19,13 +19,13 @@ exports.addClass = (req, res) => {
   Class.addClass(newClass,
     (err, data) => {
       if (err) {
-        res.status(500).send({
+        res.status(500).json({
           message:
             err.message || "Some error occurred while adding the class."
         })
       }
       else {
-        res.send(data);
+        res.json(data);
       }
     }
   );

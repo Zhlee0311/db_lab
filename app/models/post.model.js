@@ -27,8 +27,23 @@ class Post {
       result(err, null);
     }
   }
+
+
+  static async deletePost(postId, deleter, result) {
+    try {
+      const res1 = await queryAsync("UPDATE post SET deleter=? WHERE id =?",
+        [deleter, postId]);
+      const res2 = await queryAsync("SELECT * FROM post WHERE id =?", postId);
+      const postDeleted = res2[0];
+
+      console.log("post deleted:", { ...postDeleted });
+      result(null, { ...postDeleted });
+
+    }
+    catch (err) {
+      console.log(err);
+      result(err, null);
+    }
+  }
 }
-
-
-
 module.exports = Post;

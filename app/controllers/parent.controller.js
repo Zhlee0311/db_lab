@@ -5,7 +5,7 @@ const tokenEncode = require('../public/encode.js').tokenEncode;
 
 exports.register = (req, res) => {
   if (!req.body) {
-    res.status(400).send({ message: "Content can not be empty!" });
+    res.status(400).json({ message: "Content can not be empty!" });
     return;
   }
 
@@ -22,18 +22,18 @@ exports.register = (req, res) => {
   Parent.register(parent,
     (err, data) => {
       if (err) {
-        res.status(500).send({
+        res.status(500).json({
           message: err.message || "Some error occurred while registering the Parent."
         })
       }
-      else res.send(data);//这里data是回调给前端的response
+      else res.json(data);//这里data是回调给前端的response
     })
 };
 
 
 exports.login = (req, res) => {
   if (!req.body) {
-    res.status(400).send({ message: "Content can not be empty!" });
+    res.status(400).json({ message: "Content can not be empty!" });
     return;
   }
   const parent = new Parent(
@@ -44,7 +44,7 @@ exports.login = (req, res) => {
   )
   parent.login((err, data) => {
     if (err) {
-      res.status(500).send({
+      res.status(500).json({
         message: err.message || "Some error occurred while login the Parent."
       })
     }

@@ -5,7 +5,7 @@ const tokenEncode = require("../public/encode.js").tokenEncode;
 
 exports.register = (req, res) => {
   if (!req.body) {
-    res.status(400).send({
+    res.status(400).json({
       message: "Content can not be empty!"
     });
     return;
@@ -26,18 +26,18 @@ exports.register = (req, res) => {
 
   Teacher.register(teacher, (err, data) => {
     if (err)
-      res.status(500).send({
+      res.status(500).json({
         message:
           err.message || "Some error occurred while registering the Teacher."
       });
-    else res.send(data);
+    else res.json(data);
   }
   )
 };
 
 exports.login = (req, res) => {
   if (!req.body) {
-    res.status(400).send({
+    res.status(400).json({
       message: "Content can not be empty!"
     });
     return;
@@ -55,7 +55,7 @@ exports.login = (req, res) => {
 
   teacher.login((err, data) => {
     if (err) {
-      res.status(500).send({
+      res.status(500).json({
         message:
           err.message || "Some error occurred while login the Teacher."
       });
