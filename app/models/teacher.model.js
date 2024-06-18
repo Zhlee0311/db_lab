@@ -42,14 +42,21 @@ class Teacher {
         throw (newError);
       }
 
+      const res4 = await queryAsync("SELECT * FROM parent WHERE phone =?", newTeacher.phone);
+      if (res4.length) {
+        const errorMessage = `[The phone number has been registered, please check your input] ${newTeacher.phone}`;
+        const newError = new Error(errorMessage);
+        throw (newError);
+      }
+
       await queryAsync("START TRANSACTION");
 
-      const res4 = await queryAsync(
+      const res5 = await queryAsync(
         "INSERT INTO teacher(name,sex,class,subject,phone,password) VALUES(?,?,?,?,?,?)",
         [newTeacher.name, newTeacher.sex, classId, newTeacher.subject, newTeacher.phone, newTeacher.password]
       );
 
-      teacherId = res4.insertId;
+      teacherId = res5.insertId;
 
       await queryAsync(
         "UPDATE teacher SET prefix_id =? WHERE id =?",
@@ -57,8 +64,8 @@ class Teacher {
       );
 
       if (newTeacher.ismaster == 1) {
-        const res5 = await queryAsync("SELECT master FROM class WHERE id =?", classId);
-        if (res5[0].master != null) {
+        const res6 = await queryAsync("SELECT master FROM class WHERE id =?", classId);
+        if (res6[0].master != null) {
           const errorMessage = `[The class has been assigned a master, please check your input]${newTeacher.class}`;
           const newError = new Error(errorMessage);
           throw (newError);

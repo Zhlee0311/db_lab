@@ -35,13 +35,20 @@ class Parent {
         const newError = new Error(errorMessage);
         throw (newError);
       }
+      
+      const res4 = await queryAsync("SELECT *FROM teacher WHERE phone=?", newParent.phone);
+      if (res4.length) {
+        const errorMessage = `[The phone number has been registered, please check your input] ${newParent.phone}`;
+        const newError = new Error(errorMessage);
+        throw (newError);
+      }
 
-      const res4 = await queryAsync("INSERT INTO parent(name,sex,child,phone,password) VALUES(?,?,?,?,?)",
+      const res5 = await queryAsync("INSERT INTO parent(name,sex,child,phone,password) VALUES(?,?,?,?,?)",
         [newParent.name, newParent.sex, newParent.child, newParent.phone, newParent.password]
       );
-      const parentId = res4.insertId;
+      const parentId = res5.insertId;
 
-      const res5 = await queryAsync("UPDATE parent SET prefix_id=? WHERE id=?",
+      const res6 = await queryAsync("UPDATE parent SET prefix_id=? WHERE id=?",
         ["parent" + parentId, parentId]
       );
 
