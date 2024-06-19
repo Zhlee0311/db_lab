@@ -40,6 +40,27 @@ class Class {
     }
   }
 
+  static async showClass(school, result) {
+    try {
+      const res1 = await queryAsync(
+        "SELECT class.*, teacher.name as master_name, COUNT(student.id) as student_num " +
+        "FROM class " +
+        "LEFT JOIN teacher ON class.master = teacher.id " +
+        "LEFT JOIN student ON class.id = student.class " +
+        "WHERE class.school = ? " +
+        "GROUP BY class.id",
+        [school]
+      );
+      console.log("class showed:", res1);
+      result(null, res1);
+    }
+    catch (err) {
+      console.log(err);
+      result(err, null);
+    }
+  }
+
+
 }
 
 module.exports = Class;

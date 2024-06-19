@@ -30,3 +30,29 @@ exports.addClass = (req, res) => {
     }
   );
 }
+
+exports.showClass = (req, res) => {
+  if (!req.user) {
+    res.status(401).json({
+      message: "Unauthorized!"
+    });
+    return;
+  }
+  const school = req.user.school;
+
+  Class.showClass(school,
+    (err, data) => {
+      if (err) {
+        res.status(500).json({
+          message:
+            err.message || "Some error occurred while showing the class."
+        });
+      }
+      else {
+        res.json(data);
+      }
+    }
+  )
+
+
+}
