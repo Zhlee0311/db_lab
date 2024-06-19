@@ -25,17 +25,107 @@ class Public {
         if (res2.length) {
           ismaster = 1;
         }
+        const res3 = await queryAsync("SELECT * FROM class WHERE id=(SELECT class FROM teacher WHERE id=?)", id);
+        const res4 = await queryAsync("SELECT * FROM school WHERE id=(SELECT school FROM class WHERE id=(SELECT class FROM teacher WHERE id=?))", id);
+
+        console.log("user info:", {
+          teacher:
+          {
+            ...res1[0],
+            ismaster: ismaster,
+          },
+          class:
+          {
+            ...res3[0]
+          },
+          school:
+          {
+            ...res4[0]
+          },
+          user_type:
+            user_type
+        });
+
+        result(null, {
+          teacher:
+          {
+            ...res1[0],
+            ismaster: ismaster,
+          },
+          class:
+          {
+            ...res3[0]
+          },
+          school:
+          {
+            ...res4[0]
+          },
+          user_type:
+            user_type
+        })
       }
       catch (err) {
         console.log(err);
         result(err, null);
       }
-
     }
     else if (user_type == 'parent') {
+      try {
+        const res1 = await queryAsync("SELECT * FROM parent WHERE id =?", id);
+        const res2 = await queryAsync("SELECT * FROM student WHERE id =?", res1[0].child);
+        const res3 = await queryAsync("SELECT * FROM class WHERE id=?", res2[0].class);
+        const res4 = await queryAsync("SELECT * FROM school WHERE id=?", res3[0].school);
 
+        console.log("user info:", {
+          parent:
+          {
+            ...res1[0]
+          },
+          student:
+          {
+            ...res2[0]
+          },
+          class:
+          {
+            ...res3[0]
+          },
+          school:
+          {
+            ...res4[0]
+          },
+          user_type:
+            user_type
+        });
+        result(null,
+          {
+            parent:
+            {
+              ...res1[0]
+            },
+            student:
+            {
+              ...res2[0]
+            },
+            class:
+            {
+              ...res3[0]
+            },
+            school:
+            {
+              ...res4[0]
+            },
+            user_type:
+              user_type
+          }
+        );
+      }
+      catch (err) {
+        console.log(err);
+        result(err, null);
+      }
     }
-
-
   }
+
 }
+
+module.exports = Public;
