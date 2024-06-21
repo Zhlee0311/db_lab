@@ -46,7 +46,7 @@ class Student {
       const boys = res2[0].boys;
       const girls = res3[0].girls;
 
-      console.log("students in class:", res1);
+      console.log("students in class:", res1[0]);
       result(null, { students: res1, boys: boys, girls: girls })
 
     }

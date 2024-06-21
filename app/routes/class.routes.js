@@ -5,7 +5,7 @@ module.exports = app => {
 
   router.post('/addClass', classes.addClass);
 
-  router.get('/showClass', classes.showClass);
+  router.post('/showClass', classes.showClass);
 
   app.use('/api/classes', router);
 

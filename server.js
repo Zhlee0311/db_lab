@@ -7,10 +7,10 @@ const app = express();
 
 function verifyToken(req, res, next) {
   if (req.path == '/api/parents/login' || req.path == '/api/teachers/login' || req.path == '/api/admins/login'
-    || req.path == '/api/parents/register' || req.path == 'api/teachers/register') {
+    || req.path == '/api/parents/register' || req.path == '/api/teachers/register') {
     return next();
   }
-  const token = req.cookies.token;
+  const token = req.headers['token'];
   if (!token) {
     return res.status(401).json({ message: 'No token provided' });
   }

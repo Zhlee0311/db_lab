@@ -50,14 +50,7 @@ exports.login = (req, res) => {
     }
     else {
       const token = tokenEncode(data);
-      res.cookie('token', token,
-        {
-          maxAge: 30 * 24 * 60 * 60 * 1000,
-          httpOnly: true,
-          secure: true,
-          sameSite: 'None'
-        });
-      res.json({ message: 'login success', ...data });
+      res.json({ message: 'login success', ...data, token: token });
     }
   })
 };
